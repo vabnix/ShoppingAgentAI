@@ -94,6 +94,12 @@ npm run dev
 
 Then open http://localhost:3000.
 
+The seed adds 46 products across 7 categories (a few out of stock), about 120 reviews and 18 orders. The orders belong to six mock customers, so you can ask Order Support about them:
+
+`maya.patel@example.com`, `jordan.kim@example.com`, `priya.shah@example.com`, `leo.martins@example.com`, `ana.gomez@example.com`, `sam.lee@example.com`
+
+Each customer has orders in different states (pending, paid, shipped, delivered, cancelled). The data comes from a fixed random seed, so `npm run db:seed -- --reset` always rebuilds the same store.
+
 The agents need Claude credentials. Either run `ant auth login`, or copy `.env.example` to `.env.local` and set `ANTHROPIC_API_KEY`. The catalog, API and docs work without it. Only the chat needs it.
 
 ## Useful URLs
