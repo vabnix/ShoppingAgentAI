@@ -16,6 +16,15 @@ SQLite through Drizzle ORM (`@libsql/client`). The schema is in `src/db/schema.t
 - The local database file (`data/local.db`) is gitignored. `DATABASE_URL` overrides its location.
 - CI (`.github/workflows/db-migrations.yml`) fails if the schema changes without a migration.
 
+## MCP server and agents
+
+- Business logic lives in `src/lib/catalog.ts` and `src/lib/orders.ts`. The REST routes and the MCP tools both call these, so change behavior there, not in the routes.
+- `src/mcp/server.ts` defines the MCP tools. It's served over Streamable HTTP at `/api/mcp` for outside clients.
+- `src/agents/definitions.ts` holds each agent's system prompt and tool allowlist. `src/agents/runtime.ts` runs the Claude tool loop, connected to the MCP server in-process.
+- The chat UI (`src/components/AgentChat.tsx`) posts to `/api/agent/chat` and reads a stream of events. The browser keeps the Claude message history and sends it back unchanged each turn.
+- Claude credentials come from `ANTHROPIC_API_KEY` or an `ant auth login` profile.
+- `npm run db:seed` loads sample products. Add `-- --reset` to wipe orders, reviews and products first.
+
 ## Git
 
 - Use `/cpm` to commit, push and merge.

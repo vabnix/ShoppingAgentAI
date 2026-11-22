@@ -15,6 +15,13 @@
       "when": 1795314134541,
       "tag": "0001_add_product_details_and_reviews",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1795314703309,
+      "tag": "0002_add_orders",
+      "breakpoints": true
     }
   ]
 }
