@@ -16,7 +16,10 @@ const NEXT_STATUS: Record<OrderStatus, OrderStatus[]> = {
 export async function listOrders(q: z.output<typeof OrderListQuery>) {
   const filters: SQL[] = [];
   if (q.status) filters.push(eq(orders.status, q.status));
-  if (q.customerEmail) filters.push(eq(orders.customerEmail, q.customerEmail));
+  // Emails aren't case sensitive in practice, and people type them however.
+  if (q.customerEmail) {
+    filters.push(sql`lower(${orders.customerEmail}) = ${q.customerEmail.toLowerCase()}`);
+  }
 
   return db
     .select()
@@ -82,7 +85,7 @@ export async function placeOrder(input: z.output<typeof CreateOrder>) {
       .insert(orders)
       .values({
         customerName: input.customerName,
-        customerEmail: input.customerEmail,
+        customerEmail: input.customerEmail.toLowerCase(),
         shippingAddress: input.shippingAddress,
         totalCents,
       })

@@ -69,6 +69,9 @@ export function AgentChat({ agents }: { agents: PublicAgent[] }) {
     if (!el) return;
     el.style.height = "auto";
     el.style.height = `${el.scrollHeight}px`;
+    // Only show a scrollbar once it hits the max height. Otherwise macOS
+    // "always show scrollbars" draws one in an empty box.
+    el.style.overflowY = el.scrollHeight > el.clientHeight ? "auto" : "hidden";
   }, [input]);
 
   function updateConvo(id: string, fn: (c: Conversation) => Conversation) {
