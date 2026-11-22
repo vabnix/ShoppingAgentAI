@@ -6,6 +6,16 @@ Next.js 16 (App Router, `src/` dir), React 19, TypeScript, Tailwind CSS v4.
 - Build: `npm run build`
 - Lint: `npm run lint`
 
+## Database
+
+SQLite through Drizzle ORM (`@libsql/client`). The schema is in `src/db/schema.ts` and migrations are in `drizzle/`.
+
+- After any schema change, run `npm run db:generate -- --name <short_description>` and commit the new files in `drizzle/` together with the schema change.
+- Never edit or delete a migration that has already been committed. Fix mistakes with a new migration.
+- `npm run db:migrate` applies pending migrations, and `npm run db:studio` opens a browser UI.
+- The local database file (`data/local.db`) is gitignored. `DATABASE_URL` overrides its location.
+- CI (`.github/workflows/db-migrations.yml`) fails if the schema changes without a migration.
+
 ## Git
 
 - Use `/cpm` to commit, push and merge.

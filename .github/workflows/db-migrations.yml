@@ -1,0 +1,52 @@
+name: DB migrations
+
+on:
+  pull_request:
+    paths:
+      - "src/db/**"
+      - "drizzle/**"
+      - "drizzle.config.ts"
+      - "package.json"
+      - "package-lock.json"
+  push:
+    branches: [main]
+    paths:
+      - "src/db/**"
+      - "drizzle/**"
+      - "drizzle.config.ts"
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: file:./data/ci.db
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      # Catches broken or conflicting migration files, e.g. two branches that
+      # both generated migration 0003.
+      - name: Check migration history
+        run: npx drizzle-kit check
+
+      # If schema.ts changed but nobody ran db:generate, this produces new
+      # files and the job fails.
+      - name: Make sure schema changes have a migration
+        run: |
+          npx drizzle-kit generate
+          if [ -n "$(git status --porcelain drizzle)" ]; then
+            echo "::error::schema.ts changed without a migration. Run 'npm run db:generate' and commit the drizzle/ folder."
+            git status --porcelain drizzle
+            exit 1
+          fi
+
+      - name: Apply all migrations to a fresh database
+        run: |
+          mkdir -p data
+          npx drizzle-kit migrate
